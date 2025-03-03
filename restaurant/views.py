@@ -7,23 +7,41 @@ from datetime import datetime
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+from rest_framework import generics
+from .serializers import MenuSerializer
 
 
 # Create your views here.
+# 전체 메뉴 리스트 조회 + 메뉴 생성 API (GET, POST)
+class MenuItemsView(generics.ListCreateAPIView):
+    queryset = Menu.objects.all()
+    serializer_class = MenuSerializer
+
+
+# 특정 메뉴 아이템 조회, 수정, 삭제 API (GET, PUT, DELETE)
+class SingleMenuItemView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Menu.objects.all()
+    serializer_class = MenuSerializer
+
+
 def index(request):
     return render(request, 'index.html')
+
 
 def home(request):
     return render(request, 'home.html')
 
+
 def about(request):
     return render(request, 'about.html')
 
+
 def reservations(request):
-    date = request.GET.get('date',datetime.today().date())
+    date = request.GET.get('date', datetime.today().date())
     bookings = Booking.objects.all()
     booking_json = serializers.serialize('json', bookings)
-    return render(request, 'bookings.html',{"bookings":booking_json})
+    return render(request, 'bookings.html', {"bookings": booking_json})
+
 
 def book(request):
     form = BookingForm()
@@ -31,8 +49,9 @@ def book(request):
         form = BookingForm(request.POST)
         if form.is_valid():
             form.save()
-    context = {'form':form}
+    context = {'form': form}
     return render(request, 'book.html', context)
+
 
 # Add your code here to create new views
 def menu(request):
@@ -47,6 +66,7 @@ def display_menu_item(request, pk=None):
     else:
         menu_item = ""
     return render(request, 'menu_item.html', {"menu_item": menu_item})
+
 
 @csrf_exempt
 def bookings(request):
@@ -70,5 +90,3 @@ def bookings(request):
     booking_json = serializers.serialize('json', bookings)
 
     return HttpResponse(booking_json, content_type='application/json')
-
-
