@@ -9,19 +9,32 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from rest_framework import generics
 from .serializers import MenuSerializer
-
+from rest_framework.permissions import IsAuthenticated ,AllowAny
+from rest_framework.authentication import TokenAuthentication
 
 # Create your views here.
 # 전체 메뉴 리스트 조회 + 메뉴 생성 API (GET, POST)
 class MenuItemsView(generics.ListCreateAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
+    authentication_classes = [TokenAuthentication]
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]  # ✅ 조회(GET)는 누구나 가능
+        return [IsAuthenticated()]  # ✅ POST 요청은 인증된 사용자만 가능
 
 
 # 특정 메뉴 아이템 조회, 수정, 삭제 API (GET, PUT, DELETE)
 class SingleMenuItemView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 
 def index(request):

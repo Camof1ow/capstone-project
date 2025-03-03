@@ -18,5 +18,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('restaurant/', include('restaurant.urls'))
+    path('restaurant/', include('restaurant.urls')),
+    path('auth/', include('djoser.urls')),  # ✅ Djoser 기본 엔드포인트
+    path('auth/', include('djoser.urls.authtoken')),  # ✅ 토큰 인증 엔드포인트
 ]
