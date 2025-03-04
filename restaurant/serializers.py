@@ -1,7 +1,14 @@
 from rest_framework import serializers
-from .models import Menu  # Menu 모델 import
+from .models import Menu, Booking
+
 
 class MenuSerializer(serializers.ModelSerializer):
     class Meta:
         model = Menu
-        fields = '__all__'  # 모든 필드 직렬화
+        fields = '__all__'
+
+
+class BookingSerializer(serializers.ModelSerializer):  # BookingSerializer 추가
+    class Meta:
+        model = Booking
+        fields = '__all__'

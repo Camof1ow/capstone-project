@@ -8,9 +8,10 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from rest_framework import generics
-from .serializers import MenuSerializer
-from rest_framework.permissions import IsAuthenticated ,AllowAny
+from .serializers import MenuSerializer, BookingSerializer
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import TokenAuthentication
+
 
 # Create your views here.
 # 전체 메뉴 리스트 조회 + 메뉴 생성 API (GET, POST)
@@ -30,6 +31,28 @@ class SingleMenuItemView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+
+class BookingListView(generics.ListCreateAPIView):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
+    authentication_classes = [TokenAuthentication]
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+
+class SingleBookingView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
 
     def get_permissions(self):
         if self.request.method == 'GET':
